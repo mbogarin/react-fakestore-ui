@@ -178,8 +178,7 @@ function ProductDetails() {
 
 					{/* Buttons */}
 					<div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-3 mt-4 ms-3 justify-md-content-center justify-content-center flex-wrap">
-						{/* 1. Add to cart 
-              //  Note: add functionality later */}
+						{/* 1. Add to cart - This button is non-functional as the API does not support cart operations, but it is included for UI completeness. It is disabled to indicate that it is not functional. */}
 
 						<Button
 							variant="outline-success"
