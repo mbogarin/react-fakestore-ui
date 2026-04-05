@@ -3,6 +3,10 @@ body {
 	/* Adjust the padding to account for the fixed navbar */
 }
 
+.welcome-container {
+	padding-top: 50px;
+}
+
 /* Close button alignment for alerts */
 .alert-align-close.alert-dismissible {
 	padding-right: 3rem;

@@ -37,6 +37,9 @@ function ProductDetails() {
 					(item) => item.id.toString() === id.toString(), // Find the product in the fallback data with the matching ID.
 				);
 				setProduct(fallbackProduct || null); // Set the product state with the found fallback product or null if not found.
+				console.error(
+					`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
+				);
 				setError(
 					`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
 				);
@@ -75,6 +78,9 @@ function ProductDetails() {
 				);
 				navigate("/product-listing"); // Redirect to the product listing page after deletion.
 			} else {
+				console.error(
+					`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
+				);
 				setDeleteError(
 					`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
 				);

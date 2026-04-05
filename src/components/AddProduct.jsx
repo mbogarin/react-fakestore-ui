@@ -116,14 +116,20 @@ const AddProduct = () => {
 				`${createdProduct.title || "Product"} was successfully added!`,
 			);
 			navigate("/product-listing");
-		} catch {
+		} catch (addError) {
+			console.error(
+				"Error adding product. Falling back to local data:",
+				addError,
+			);
+			setError(
+				`${addError.message}: Failed to add product to API. Added to fallback data instead.`,
+			);
 			const fallbackCreatedProduct = {
 				id: getNextFallbackId(),
 				...productDataToSubmit,
 			}; // Create a fallback product object with the submitted data and a new ID.
 
 			fallbackProducts.unshift(fallbackCreatedProduct); // Add the new product to the beginning of the fallback data array to ensure it appears first in the product listing.
-			setError(null);
 			sessionStorage.setItem(
 				"flashSuccessMessage",
 				`${fallbackCreatedProduct.title || "Product"} was successfully added to fallback data!`,

@@ -50,6 +50,7 @@ function EditProduct() {
 
 				const product = response.data;
 				if (!product) {
+					console.error("Product not found.");
 					setError("Product not found.");
 					setLoading(false);
 					return;
@@ -62,7 +63,6 @@ function EditProduct() {
 					category: product.category || "",
 					image: product.image || "",
 				}); // Set product data from API response.
-
 				setError("");
 			} catch (fetchError) {
 				console.error("Error fetching product:", fetchError); // Log the error for debugging purposes.
@@ -72,9 +72,12 @@ function EditProduct() {
 				);
 
 				if (!fallbackProduct) {
+					console.error(
+						`${fetchError.message}: Failed to fetch product and no fallback data available.`,
+					);
 					setError(
 						`${fetchError.message}: Failed to fetch product and no fallback data available.`,
-					); // Set error message if fetching product fails and no fallback data is available.
+					);
 				} else {
 					setProductData({
 						title: fallbackProduct.title || "",
@@ -84,6 +87,9 @@ function EditProduct() {
 						image: fallbackProduct.image || "",
 					}); // Set product data from fallback data if API call fails.
 
+					console.error(
+						`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
+					);
 					setError(
 						`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
 					);
@@ -135,7 +141,11 @@ function EditProduct() {
 			);
 			setSuccessMessage("Product was successfully updated!");
 			navigate(`/product-details/${id}`);
-		} catch {
+		} catch (updateError) {
+			console.error(
+				"Error updating product. Falling back to local data:",
+				updateError,
+			);
 			const fallbackIndex = fallbackProducts.findIndex(
 				(item) => item.id.toString() === id.toString(),
 			);
@@ -188,7 +198,6 @@ function EditProduct() {
 				<Alert
 					variant="danger"
 					dismissible
-					// onClose={() => setError(null)}
 					className="mb-5 mt-0 py-2 alert-align-close text-center"
 				>
 					{error}

@@ -20,6 +20,7 @@ export const fallbackProducts = [
 		category: "men's clothing",
 		image: "https://picsum.photos/400/300?random=2",
 	},
+
 	{
 		id: 3,
 		title: "Mens Cotton Jacket",
