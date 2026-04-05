@@ -1,1 +1,18 @@
+body {
+	padding-top: 80px;
+	/* Adjust the padding to account for the fixed navbar */
+}
 
+/* Close button alignment for alerts */
+.alert-align-close.alert-dismissible {
+	padding-right: 3rem;
+}
+
+.alert-align-close.alert-dismissible .btn-close {
+	top: 50%;
+	transform: translateY(-50%);
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/*  */
