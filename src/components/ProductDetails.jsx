@@ -8,9 +8,8 @@ import ToastContainer from "react-bootstrap/ToastContainer";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
-import { fallbackProducts } from "../fallback";
 
-import ConfirmDeleteModal from "./ConfirmDeleteModal"; // Import the confirm delete modal component that will be used to confirm deletion of a product before actually deleting it.
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function ProductDetails() {
 	const { id } = useParams();
@@ -23,7 +22,7 @@ function ProductDetails() {
 	const [deleteError, setDeleteError] = useState(null);
 	const [showAddToCartToast, setShowAddToCartToast] = useState(false); // State to control the visibility of the add-to-cart confirmation toast.
 
-	const [showDeleteModal, setShowDeleteModal] = useState(false); // State to control the visibility of the confirm delete modal.
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	useEffect(() => {
 		const fetchProductDetails = async () => {
@@ -31,8 +30,8 @@ function ProductDetails() {
 				const response = await axios.get(
 					`https://fakestoreapi.com/products/${id}`,
 				);
-				const productId = response.data; // Find the product with the matching ID.
-				setProduct(productId); // Set the product state with the found product.
+				const productId = response.data;
+				setProduct(productId);
 				setError(null);
 
 				console.log(
@@ -40,31 +39,28 @@ function ProductDetails() {
 					response.data,
 				);
 			} catch (fetchError) {
-				const fallbackProductId = fallbackProducts.find(
-					(item) => item.id.toString() === id.toString(), // Find the product in the fallback data with the matching ID.
-				);
-				setProduct(fallbackProductId || null); // Set the product state with the found fallback product or null if not found.
+				setProduct(null);
 				setError(
-					`${fetchError.message}: Failed to fetch product from API. Displaying fallback data.`,
+					`${fetchError.message}: Failed to fetch product from API.`,
 				);
 
 				console.error(
-					`${fetchError.message}: Failed to fetch product from API. Displaying fallback data.`,
+					`${fetchError.message}: Failed to fetch product from API.`,
 				);
 			}
 			setLoading(false);
 		};
 
-		if (id) fetchProductDetails(); // Only fetch if ID is present to avoid unnecessary API calls.
-	}, [id]); // Re-run the effect if the ID changes.
+		if (id) fetchProductDetails();
+	}, [id]);
 
 	const handleDelete = async () => {
 		setDeleting(true);
 		setDeleteError(null);
 
 		try {
-			await axios.delete(`https://fakestoreapi.com/products/${id}`); // Attempt to delete the product from the API.
-			setProduct(null); // Clear the product details after deletion.
+			await axios.delete(`https://fakestoreapi.com/products/${id}`);
+			setProduct(null);
 
 			sessionStorage.setItem(
 				"flashSuccessMessage",
@@ -73,28 +69,13 @@ function ProductDetails() {
 
 			console.log(
 				"successful API DELETE request in ProductDetails component",
-			); // Log success message for debugging.
+			);
 
 			navigate("/product-listing"); // Redirect to the product listing page after deletion.
 		} catch (deleteErrorResponse) {
-			const fallbackIndex = fallbackProducts.findIndex(
-				(item) => item.id.toString() === id.toString(),
-			); // Find the index of the product in the fallback data with the matching ID.
-
-			if (fallbackIndex !== -1) {
-				fallbackProducts.splice(fallbackIndex, 1); // Remove the product from the fallback data if it exists.
-				setProduct(null); // Clear the product details after deletion.
-				sessionStorage.setItem(
-					"flashSuccessMessage",
-					"Product from fallback data was successfully deleted!",
-				); // Set a success message indicating that the product from the fallback data was deleted.
-
-				navigate("/product-listing"); // Redirect to the product listing page after deletion.
-			} else {
-				setDeleteError(
-					`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
-				);
-			}
+			setDeleteError(
+				`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
+			);
 		} finally {
 			setDeleting(false);
 		}
@@ -139,8 +120,14 @@ function ProductDetails() {
 					autohide
 					bg="success"
 				>
-					<Toast.Body className="text-white fw-semibold fs-5">
-						Product added to cart!
+					<Toast.Header closeButton={false} className="py-2">
+						<strong className="me-auto text-success">
+							Added to Cart!
+						</strong>
+						<small className="text-success">just now</small>
+					</Toast.Header>
+					<Toast.Body className="me-auto text-white py-2 px-3fw-semibold">
+						{product.title}
 					</Toast.Body>
 				</Toast>
 			</ToastContainer>
@@ -165,7 +152,7 @@ function ProductDetails() {
 				</Alert>
 			)}
 
-			<div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 mb-5">
+			<div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 mb-5 mx-5 py-4 px-5">
 				{/* image */}
 				<img
 					src={product.image}
@@ -203,8 +190,7 @@ function ProductDetails() {
 
 					{/* Buttons */}
 					<div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-3 mt-4 ms-3 justify-md-content-center justify-content-center flex-wrap">
-						{/* 1. Add to cart - This button is non-functional as the API does not support cart operations, but it is included for UI completeness. It is disabled to indicate that it is not functional. */}
-
+						{/* 1. Add to cart */}
 						<Button
 							variant="outline-success"
 							className="rounded-pill px-4 fw-semibold"
@@ -252,7 +238,7 @@ function ProductDetails() {
 				loading={deleting}
 			/>
 		</Container>
-	); // end of return JSX.
-} // end of ProductDetails component.
+	);
+}
 
 export default ProductDetails;

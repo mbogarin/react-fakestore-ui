@@ -8,7 +8,6 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
-import { fallbackProducts } from "../fallback";
 
 // Utility function to format prices.
 const priceFormatter = new Intl.NumberFormat("en-US", {
@@ -20,9 +19,13 @@ function ProductListing() {
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const [successMessage, setSuccessMessage] = useState(() =>
-		sessionStorage.getItem("flashSuccessMessage"),
-	);
+	const [successMessage, setSuccessMessage] = useState(() => {
+		const flashMessage = sessionStorage.getItem("flashSuccessMessage");
+		if (flashMessage) {
+			sessionStorage.removeItem("flashSuccessMessage");
+		}
+		return flashMessage;
+	});
 
 	useEffect(() => {
 		const fetchProducts = async () => {
@@ -38,9 +41,9 @@ function ProductListing() {
 					response.data,
 				);
 			} catch (fetchError) {
-				setProducts(fallbackProducts);
+				setProducts([]);
 				setError(
-					`${fetchError.message}: Failed to fetch products. Displaying fallback data.`,
+					`${fetchError.message}: Failed to fetch products. Please try again later.`,
 				);
 
 				console.error("Error fetching products from API:", fetchError);
@@ -50,13 +53,6 @@ function ProductListing() {
 
 		fetchProducts();
 	}, []);
-
-	// Clear the success message from session storage after displaying it once. Ensures it is only shown once immediately after a successful action.
-	useEffect(() => {
-		if (successMessage) {
-			sessionStorage.removeItem("flashSuccessMessage");
-		}
-	}, [successMessage]);
 
 	if (loading) {
 		return (
@@ -85,7 +81,10 @@ function ProductListing() {
 				<Alert
 					variant="success"
 					dismissible
-					onClose={() => setSuccessMessage(null)}
+					onClose={() => {
+						sessionStorage.removeItem("flashSuccessMessage");
+						setSuccessMessage(null);
+					}}
 					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{successMessage}
