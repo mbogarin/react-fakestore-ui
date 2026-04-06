@@ -16,7 +16,7 @@ import { fallbackProducts } from "../fallback";
 // Extract unique categories from the fallback products:
 const uniqueCategories = Array.from(
 	new Set(fallbackProducts.map((product) => product.category)),
-);
+); //
 
 function EditProduct() {
 	const { id } = useParams();
@@ -31,7 +31,7 @@ function EditProduct() {
 	const [showModal, setShowModal] = useState(false); // State to control the visibility of the modal.
 	const [isSubmitting, setIsSubmitting] = useState(false); // State to track if the form is being submitted.
 
-	const [productData, setProductData] = useState({
+	const [formData, setFormData] = useState({
 		title: "",
 		price: "",
 		description: "",
@@ -48,29 +48,35 @@ function EditProduct() {
 					`https://fakestoreapi.com/products/${id}`,
 				);
 
+				console.log(
+					"successful API GET request in EditProduct component:",
+					response.data,
+				);
+
 				const product = response.data;
+				//
 				if (!product) {
-					console.error("Product not found.");
 					setError("Product not found.");
 					setLoading(false);
 					return;
-				} // Set the product data in the form state to pre-populate the form fields with the existing product details.
+				}
 
-				setProductData({
+				setFormData({
 					title: product.title || "",
 					price: String(product.price ?? ""), // Convert price to string for form input compatibility.
 					description: product.description || "",
 					category: product.category || "",
 					image: product.image || "",
-				}); // Set product data from API response.
+				}); // Set form data from API response.
+
 				setError("");
 			} catch (fetchError) {
-				console.error("Error fetching product:", fetchError); // Log the error for debugging purposes.
+				console.error("Error fetching product:", fetchError);
 
+				// Fallback to local data if API call fails:
 				const fallbackProduct = fallbackProducts.find(
 					(item) => item.id.toString() === id.toString(),
 				);
-
 				if (!fallbackProduct) {
 					console.error(
 						`${fetchError.message}: Failed to fetch product and no fallback data available.`,
@@ -79,13 +85,13 @@ function EditProduct() {
 						`${fetchError.message}: Failed to fetch product and no fallback data available.`,
 					);
 				} else {
-					setProductData({
+					setFormData({
 						title: fallbackProduct.title || "",
 						price: String(fallbackProduct.price ?? ""), // Convert price to string for form input compatibility.
 						description: fallbackProduct.description || "",
 						category: fallbackProduct.category || "",
 						image: fallbackProduct.image || "",
-					}); // Set product data from fallback data if API call fails.
+					}); // Set form data from fallback data if API call fails.
 
 					console.error(
 						`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
@@ -104,7 +110,7 @@ function EditProduct() {
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
-		setProductData((prevData) => ({ ...prevData, [name]: value }));
+		setFormData((prevData) => ({ ...prevData, [name]: value }));
 	};
 
 	const handleSubmit = (event) => {
@@ -127,16 +133,20 @@ function EditProduct() {
 
 		// Prepare the updated product data to be sent to the API. Ensure that the price is converted back to a number format for the API request, as it was stored as a string in the form state for input compatibility.
 		const productUpdateData = {
-			title: productData.title,
-			price: Number(productData.price), // Keep as number so downstream rendering can safely format it.
-			description: productData.description,
-			category: productData.category,
-			image: productData.image,
+			title: formData.title,
+			price: Number(formData.price), // Keep as number so downstream rendering can safely format it.
+			description: formData.description,
+			category: formData.category,
+			image: formData.image,
 		}; // Prepare the updated product data object.
 
 		try {
 			await axios.put(
 				`https://fakestoreapi.com/products/${id}`,
+				productUpdateData,
+			);
+			console.log(
+				"successful API PUT request for updating product in EditProduct component:",
 				productUpdateData,
 			);
 			setSuccessMessage("Product was successfully updated!");
@@ -198,7 +208,7 @@ function EditProduct() {
 				<Alert
 					variant="danger"
 					dismissible
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{error}
 				</Alert>
@@ -209,7 +219,7 @@ function EditProduct() {
 					variant="success"
 					dismissible
 					// onClose={() => setSuccessMessage(null)}
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{successMessage}
 				</Alert>
@@ -236,20 +246,20 @@ function EditProduct() {
 										Current Product Image
 									</Form.Label> */}
 
-									{productData.image ? (
+									{formData.image ? (
 										<div className="mb-5 mt-3 bg-light-subtle text-center">
 											<img
-												src={productData.image}
+												src={formData.image}
 												alt={
-													productData.title ||
+													formData.title ||
 													"Current Product"
 												}
 												style={{
-													maxWidth: "100%",
-													height: "auto",
+													maxWidth: "400px",
+													height: "300px",
 													objectFit: "contain",
 												}}
-												className="border rounded bg-white shadow-sm"
+												className="border rounded bg-white shadow-sm py-3 px-5"
 											/>
 										</div>
 									) : (
@@ -277,7 +287,7 @@ function EditProduct() {
 										type="text"
 										name="title"
 										placeholder="Enter product title"
-										value={productData.title}
+										value={formData.title}
 										onChange={handleChange}
 										className="shadow-sm"
 									/>
@@ -305,7 +315,9 @@ function EditProduct() {
 											type="number"
 											name="price"
 											placeholder="Enter product price"
-											value={productData.price}
+											value={Number(
+												formData.price,
+											).toFixed(2)}
 											onChange={handleChange}
 											className="shadow-sm"
 											min="0"
@@ -335,7 +347,7 @@ function EditProduct() {
 										as="textarea"
 										name="description"
 										placeholder="Enter product description"
-										value={productData.description}
+										value={formData.description}
 										onChange={handleChange}
 										className="shadow-sm"
 										rows={4}
@@ -358,13 +370,10 @@ function EditProduct() {
 
 									<Form.Select
 										name="category"
-										value={productData.category}
+										value={formData.category}
 										onChange={handleChange}
 										className="shadow-sm"
 									>
-										<option value="">
-											Select category...
-										</option>
 										{uniqueCategories.map((category) => (
 											<option
 												key={category}
@@ -374,7 +383,7 @@ function EditProduct() {
 													.charAt(0)
 													.toUpperCase() +
 													category.slice(1)}
-											</option> // Dynamically generate category options from the uniqueCategories array, capitalizing the first letter of each category for better display.
+											</option>
 										))}
 									</Form.Select>
 								</Form.Group>
@@ -410,7 +419,7 @@ function EditProduct() {
 				</div>
 			</div>
 
-			{/* Edit Product Modal */}
+			{/* Modal - Edit Product */}
 			<Modal
 				show={showModal}
 				onHide={handleCloseModal}
@@ -418,16 +427,17 @@ function EditProduct() {
 				backdrop={isSubmitting ? "static" : true}
 				keyboard={!isSubmitting}
 				contentClassName="rounded-4 shadow-lg border border-2 border-primary-subtle"
+				size="lg"
 			>
 				{/* Modal Header: Title */}
 				<Modal.Header
 					closeButton={!isSubmitting}
-					className="bg-primary text-white rounded-top-4 border-bottom-0"
+					className="bg-primary text-white rounded-top-4 border-bottom-0 py-3 px-2 mb-2"
 					closeVariant="white"
 				>
 					<Modal.Title className="w-100 text-center">
-						<h3 className="fw-semibold fs-3 px-2 mb-0">
-							{productData.title}
+						<h3 className="fw-semibold fs-4 mb-0 ps-4 pe-3">
+							{formData.title}
 						</h3>
 					</Modal.Title>
 				</Modal.Header>
@@ -436,43 +446,42 @@ function EditProduct() {
 				<Modal.Body className="text-center bg-light-subtle">
 					<div>
 						{/* Modal Image */}
-						{productData.image && (
-							<div className="mb-3">
+						{formData.image && (
+							<div className="mb-3 text-center img-fluid">
 								<img
-									src={productData.image}
+									src={formData.image}
 									alt={
-										productData.title ||
+										formData.title ||
 										"Product Image Preview"
 									}
 									style={{
-										maxWidth: "100%",
-										height: "100%",
+										maxWidth: "600px",
+										height: "300px",
 										objectFit: "contain",
 									}}
-									className="border rounded shadow-md p-0"
+									className="shadow-md py-3 px-5 border rounded"
 								/>
 							</div>
 						)}
 
 						{/* Modal Price */}
-						<p className="mt-3 mb-3">
-							<span className="badge bg-success fs-6 px-3 py-2 mb-2">
+						<p className="mt-4 mb-3">
+							<span className="badge bg-success fs-5 px-4 py-2 mb-2 fw-semibold">
 								{" "}
-								${productData.price}
+								${Number(formData.price).toFixed(2)}{" "}
 							</span>
 						</p>
 
 						{/* Modal Description */}
-						<p className="mt-3 mb-3 fs-5">
-							<strong>Description:</strong>{" "}
-							{productData.description}
+						<p className="mt-4 fs-5 text-start mx-4 text-justify">
+							<strong>Description:</strong> {formData.description}
 						</p>
 
 						{/* Modal Category */}
-						<p className="mt-3 mb-3 fs-5">
+						<p className="mt-4 fs-5 text-start mx-4 text-justify">
 							<strong>Category:</strong>{" "}
 							<span className="text-primary">
-								{productData.category}
+								{formData.category}
 							</span>
 						</p>
 					</div>
@@ -480,39 +489,42 @@ function EditProduct() {
 
 				{/* Modal Footer */}
 				<Modal.Footer className="bg-light-subtle rounded-bottom-4 border-top-0 d-flex justify-content-between px-3">
-					{/* Cancel button */}
-					<Button
-						variant="outline-danger"
-						onClick={handleCloseModal}
-						disabled={isSubmitting}
-						className="px-3 py-2 rounded-pill fw-semibold shadow-sm"
-					>
-						Cancel
-					</Button>
+					{/* Modal Buttons */}
+					<div className="d-flex justify-content-end gap-3 w-100 me-2">
+						{/* Confirm button */}
+						<Button
+							variant="primary"
+							onClick={handleConfirmChanges}
+							disabled={isSubmitting}
+							className="px-3 py-2 rounded-pill fw-bold shadow-sm"
+						>
+							{isSubmitting ? (
+								<>
+									<Spinner
+										as="span"
+										animation="border"
+										size="sm"
+										role="status"
+										aria-hidden="true"
+										className="me-2"
+									/>{" "}
+									Saving...
+								</>
+							) : (
+								"Confirm Changes"
+							)}
+						</Button>
 
-					{/* Confirm button */}
-					<Button
-						variant="primary"
-						onClick={handleConfirmChanges}
-						disabled={isSubmitting}
-						className="px-3 py-2 rounded-pill fw-bold shadow-sm"
-					>
-						{isSubmitting ? (
-							<>
-								<Spinner
-									as="span"
-									animation="border"
-									size="sm"
-									role="status"
-									aria-hidden="true"
-									className="me-2"
-								/>{" "}
-								Saving...
-							</>
-						) : (
-							"Confirm Changes"
-						)}
-					</Button>
+						{/* Cancel button */}
+						<Button
+							variant="outline-danger"
+							onClick={handleCloseModal}
+							disabled={isSubmitting}
+							className="px-3 py-2 rounded-pill fw-semibold shadow-sm"
+						>
+							Cancel
+						</Button>
+					</div>
 				</Modal.Footer>
 			</Modal>
 		</Container>

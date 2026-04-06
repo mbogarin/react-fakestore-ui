@@ -10,6 +10,12 @@ import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 import { fallbackProducts } from "../fallback";
 
+// Utility function to format prices.
+const priceFormatter = new Intl.NumberFormat("en-US", {
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
+});
+
 function ProductListing() {
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -26,12 +32,18 @@ function ProductListing() {
 				);
 				setProducts(response.data);
 				setError(null);
+
+				console.log(
+					"successful API GET request for products:",
+					response.data,
+				);
 			} catch (fetchError) {
-				console.error("Error fetching products:", fetchError);
 				setProducts(fallbackProducts);
 				setError(
 					`${fetchError.message}: Failed to fetch products. Displaying fallback data.`,
 				);
+
+				console.error("Error fetching products from API:", fetchError);
 			}
 			setLoading(false);
 		};
@@ -39,20 +51,12 @@ function ProductListing() {
 		fetchProducts();
 	}, []);
 
+	// Clear the success message from session storage after displaying it once. Ensures it is only shown once immediately after a successful action.
 	useEffect(() => {
 		if (successMessage) {
 			sessionStorage.removeItem("flashSuccessMessage");
 		}
 	}, [successMessage]);
-
-	const formatPrice = (price) => {
-		const num = Number(price);
-		if (Number.isNaN(num)) return price;
-		return num.toLocaleString(undefined, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2,
-		});
-	};
 
 	if (loading) {
 		return (
@@ -71,7 +75,7 @@ function ProductListing() {
 					variant="danger"
 					dismissible
 					onClose={() => setError(null)}
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{error}
 				</Alert>
@@ -82,7 +86,7 @@ function ProductListing() {
 					variant="success"
 					dismissible
 					onClose={() => setSuccessMessage(null)}
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{successMessage}
 				</Alert>
@@ -101,9 +105,10 @@ function ProductListing() {
 						className="d-flex align-items-stretch"
 					>
 						<Card className="w-100 shadow-lg h-100 d-flex flex-column border rounded-2 dark-border">
-							<Card.Body className="d-flex flex-column justify-content-between flex-grow-1">
+							<Card.Body className="d-flex flex-column flex-grow-1">
+								{/* Title */}
 								<Card.Title
-									className="mb-3 text-center fs-6 fw-bold align-items-center d-flex justify-content-center"
+									className="mb-4 text-center fs-5 fw-bold align-items-center d-flex justify-content-center"
 									style={{
 										minHeight: "5em",
 									}}
@@ -111,29 +116,31 @@ function ProductListing() {
 									{product.title}
 								</Card.Title>
 
-								<div className="mb-3">
-									<img
-										src={product.image}
-										alt={product.title}
-										style={{
-											maxHeight: "100%",
-											maxWidth: "100%",
-											objectFit: "contain",
-										}}
-										className="img-fluid border rounded bg-white shadow-sm mt-auto "
-									/>
-								</div>
+								{/* Product Image */}
+								<Card.Img
+									className="mb-4 img-fluid mt-auto align-self-center d-flex align-items-center justify-content-center"
+									variant="top"
+									src={product.image}
+									alt={product.title}
+									style={{
+										maxHeight: "200px",
+										maxWidth: "100%",
+										objectFit: "contain",
+									}}
+								/>
 
-								<Card.Text className="text-center fs-6 text-primary fw-bold mb-4 mt-auto">
-									${formatPrice(product.price)}
+								{/* Price */}
+								<Card.Text className="text-center fs-5 text-primary fw-bold mb-1 mt-4">
+									${priceFormatter.format(product.price)}
 								</Card.Text>
 
-								<div className="d-grid mt-auto px-4">
+								{/* View Details Button */}
+								<div className="d-grid mt-2 mb-0">
 									<Button
 										as={Link}
 										to={`/product-details/${product.id}`}
 										variant="outline-primary"
-										className="rounded-pill fw-semibold"
+										className="rounded-pill fw-semibold py-1 px-5"
 									>
 										View Details
 									</Button>

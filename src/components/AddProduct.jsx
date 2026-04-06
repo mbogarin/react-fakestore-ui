@@ -48,8 +48,8 @@ const AddProduct = () => {
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setFormData((prevData) => ({ ...prevData, [name]: value }));
-	};
+		setFormData((prevData) => ({ ...prevData, [name]: value })); //
+	}; //
 
 	const resetForm = () => {
 		setFormData(initialFormData);
@@ -61,23 +61,24 @@ const AddProduct = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const addForm = e.currentTarget;
+
 		if (addForm.checkValidity() === false) {
 			e.stopPropagation();
 			setValidated(true);
 			return;
 		}
 
-		const randomPlaceholderImage = getRandomPlaceholderImage(); // Generate a random placeholder image URL for the new product.
+		// const randomPlaceholderImage = getRandomPlaceholderImage(); // Generate a random placeholder image URL for the new product.
 
-		const newProduct = {
-			title: formData.title,
-			price: formData.price,
-			description: formData.description,
-			category: formData.category,
-			image: randomPlaceholderImage, // Use the generated random placeholder image URL for the new product.
-		};
+		// const newProduct = {
+		// 	title: formData.title,
+		// 	price: formData.price,
+		// 	description: formData.description,
+		// 	category: formData.category,
+		// 	image: randomPlaceholderImage, // Use the generated random placeholder image URL for the new product.
+		// }; // Create a new product object based on the form data and the generated placeholder image URL.
 
-		setProductPreview(newProduct);
+		// setProductPreview(newProduct);
 		setShowModal(true);
 		setValidated(true);
 	};
@@ -90,31 +91,38 @@ const AddProduct = () => {
 		if (isSubmitting) return; // Prevent multiple submissions
 		setIsSubmitting(true);
 
-		const selectedPlaceholderImage =
-			typeof productPreview.image === "string" &&
-			productPreview.image.trim() !== ""
-				? productPreview.image
-				: getRandomPlaceholderImage(); // Use the existing image URL if it's a string, otherwise fallback to the default placeholder image.
+		// const selectedPlaceholderImage =
+		// 	typeof productPreview.image === "string" &&
+		// 	productPreview.image.trim() !== ""
+		// 		? productPreview.image
+		// 		: getRandomPlaceholderImage(); // Use the existing image URL if it's a string, otherwise fallback to the default placeholder image.
 
 		const productDataToSubmit = {
 			title: formData.title,
 			price: Number(formData.price), // Ensure price is sent as a number to the API.
 			description: formData.description,
 			category: formData.category,
-			image: selectedPlaceholderImage, // Use the selected placeholder image URL for the new product.
-		}; //
+			image: productPreview?.image || getRandomPlaceholderImage(), // Use the selected placeholder image URL for the new product.
+		}; // Prepare the fallback product data to be submitted to the API.
 
+		// API call:
 		try {
 			const response = await axios.post(
 				"https://fakestoreapi.com/products",
 				productDataToSubmit,
 			);
+			console.log(
+				"successful API POST request for added product in AddProduct component:",
+				response.data,
+			);
+
 			const createdProduct = response.data || productDataToSubmit; // Use the response data if available, otherwise fallback to the submitted data.
 			setError(null);
 			sessionStorage.setItem(
-				"flashSuccessMessage",
+				"flashSuccessMessage", // Store a success message in session storage to be displayed on the product listing page after redirection.
 				`${createdProduct.title || "Product"} was successfully added!`,
 			);
+
 			navigate("/product-listing");
 		} catch (addError) {
 			console.error(
@@ -150,13 +158,13 @@ const AddProduct = () => {
 	const renderImage = () => {
 		if (!productPreview) return null;
 		return (
+			// Placeholder for added product image:
 			<img
 				src={previewImageUrl}
 				alt="Product Preview"
-				className="border rounded shadow-md p-0"
+				className="img-fluid text-center border rounded shadow-md py-3 px-3 mb-2 mx-auto border-2"
 				style={{
-					maxWidth: "100%",
-					height: "100%",
+					height: "300px",
 					objectFit: "contain",
 				}}
 			/>
@@ -173,7 +181,7 @@ const AddProduct = () => {
 							variant="danger"
 							dismissible
 							onClose={() => setError(null)}
-							className="mb-5 mt-0 py-2 alert-align-close text-center"
+							className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 						>
 							{error}
 						</Alert>
@@ -328,11 +336,11 @@ const AddProduct = () => {
 			>
 				<Modal.Header
 					closeButton={!isSubmitting}
-					className="bg-primary text-white rounded-top-4 border-bottom-0"
+					className="bg-primary text-white rounded-top-4 border-bottom-0 py-3 px-2 mb-2"
 					closeVariant="white"
 				>
 					<Modal.Title className="w-100 text-center">
-						<h3 className="fw-semibold fs-3 px-2 mb-0">
+						<h3 className="fw-semibold fs-4 mb-0 ps-4 pe-3">
 							{productPreview?.title}
 						</h3>
 					</Modal.Title>
@@ -340,17 +348,24 @@ const AddProduct = () => {
 				<Modal.Body className="text-center bg-light-subtle">
 					{productPreview && (
 						<div>
+							{/* Placeholder for product image */}
 							{renderImage()}
-							<p className="mt-3 mb-3 fs-6">
-								<span className="badge bg-success fs-6 px-3 py-2 mb-2">
-									${productPreview?.price}
+
+							{/* Price */}
+							<p className="mt-4 mb-3">
+								<span className="badge bg-success fs-5 px-4 py-2 mb-2 fw-semibold">
+									${Number(productPreview?.price).toFixed(2)}
 								</span>
 							</p>
-							<p className="mt-3 mb-3 fs-6">
+
+							{/* Description */}
+							<p className="mt-4 fs-5 text-start mx-2 text-justify">
 								<strong>Description:</strong>{" "}
 								{productPreview?.description}
 							</p>
-							<p>
+
+							{/* Category */}
+							<p className="mt-4 fs-5 text-start mx-2 text-justify">
 								<strong>Category:</strong>{" "}
 								<span className="text-primary">
 									{productPreview?.category}
@@ -360,38 +375,42 @@ const AddProduct = () => {
 					)}
 				</Modal.Body>
 				<Modal.Footer className="bg-light-subtle rounded-bottom-4 border-top-0 d-flex justify-content-between px-3">
-					{/* Cancel Button */}
-					<Button
-						variant="outline-danger"
-						onClick={handleDelete}
-						disabled={isSubmitting}
-						className="px-3 py-2 rounded-pill fw-semibold shadow-sm"
-					>
-						Cancel
-					</Button>
+					{/* Modal Buttons */}
+					<div className="d-flex justify-content-end gap-3 w-100 me-2">
+						{/* Confirm Button */}
+						<Button
+							variant="primary"
+							onClick={handleConfirmAdd}
+							disabled={isSubmitting}
+							className="px-3 py-2 rounded-pill fw-bold shadow-sm"
+						>
+							{isSubmitting ? (
+								<>
+									<Spinner
+										as="span"
+										animation="border"
+										size="sm"
+										role="status"
+										aria-hidden="true"
+										className="me-2"
+									/>
+									Saving...
+								</>
+							) : (
+								"Confirm Changes"
+							)}
+						</Button>
 
-					{/* Confirm Button */}
-					<Button
-						variant="primary"
-						onClick={handleConfirmAdd}
-						disabled={isSubmitting}
-						className="px-3 py-2 rounded-pill fw-bold shadow-sm"
-					>
-						{isSubmitting ? (
-							<>
-								<Spinner
-									as="span"
-									animation="border"
-									size="sm"
-									role="status"
-									className="me-2"
-								/>
-								Saving...
-							</>
-						) : (
-							"Confirm Changes"
-						)}
-					</Button>
+						{/* Cancel Button */}
+						<Button
+							variant="outline-danger"
+							onClick={handleDelete}
+							disabled={isSubmitting}
+							className="px-3 py-2 rounded-pill fw-semibold shadow-sm"
+						>
+							Cancel
+						</Button>
+					</div>
 				</Modal.Footer>
 			</Modal>
 		</Container>

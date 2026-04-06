@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
+import Toast from "react-bootstrap/Toast"; // For add-to-cart confirmation
+import ToastContainer from "react-bootstrap/ToastContainer";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
@@ -19,34 +21,41 @@ function ProductDetails() {
 	const [error, setError] = useState(null);
 	const [deleting, setDeleting] = useState(false);
 	const [deleteError, setDeleteError] = useState(null);
+	const [showAddToCartToast, setShowAddToCartToast] = useState(false); // State to control the visibility of the add-to-cart confirmation toast.
 
 	const [showDeleteModal, setShowDeleteModal] = useState(false); // State to control the visibility of the confirm delete modal.
 
 	useEffect(() => {
-		const fetchProduct = async () => {
+		const fetchProductDetails = async () => {
 			try {
 				const response = await axios.get(
 					`https://fakestoreapi.com/products/${id}`,
 				);
-				const foundProduct = response.data; // Find the product with the matching ID.
-				setProduct(foundProduct); // Set the product state with the found product.
+				const productId = response.data; // Find the product with the matching ID.
+				setProduct(productId); // Set the product state with the found product.
 				setError(null);
+
+				console.log(
+					"successful API GET request for product details in ProductDetails component:",
+					response.data,
+				);
 			} catch (fetchError) {
-				console.error("Error fetching product:", fetchError); // Log the error for debugging.
-				const fallbackProduct = fallbackProducts.find(
+				const fallbackProductId = fallbackProducts.find(
 					(item) => item.id.toString() === id.toString(), // Find the product in the fallback data with the matching ID.
 				);
-				setProduct(fallbackProduct || null); // Set the product state with the found fallback product or null if not found.
-				console.error(
-					`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
-				);
+				setProduct(fallbackProductId || null); // Set the product state with the found fallback product or null if not found.
 				setError(
-					`${fetchError.message}: Failed to fetch product. Displaying fallback data.`,
+					`${fetchError.message}: Failed to fetch product from API. Displaying fallback data.`,
+				);
+
+				console.error(
+					`${fetchError.message}: Failed to fetch product from API. Displaying fallback data.`,
 				);
 			}
 			setLoading(false);
 		};
-		if (id) fetchProduct(); // Only fetch if ID is present to avoid unnecessary API calls.
+
+		if (id) fetchProductDetails(); // Only fetch if ID is present to avoid unnecessary API calls.
 	}, [id]); // Re-run the effect if the ID changes.
 
 	const handleDelete = async () => {
@@ -56,15 +65,18 @@ function ProductDetails() {
 		try {
 			await axios.delete(`https://fakestoreapi.com/products/${id}`); // Attempt to delete the product from the API.
 			setProduct(null); // Clear the product details after deletion.
+
 			sessionStorage.setItem(
 				"flashSuccessMessage",
 				"Product was successfully deleted!",
 			);
+
+			console.log(
+				"successful API DELETE request in ProductDetails component",
+			); // Log success message for debugging.
+
 			navigate("/product-listing"); // Redirect to the product listing page after deletion.
 		} catch (deleteErrorResponse) {
-			// Handle errors during deletion.
-			console.error("Error deleting product:", deleteErrorResponse); // Log the error for debugging.
-
 			const fallbackIndex = fallbackProducts.findIndex(
 				(item) => item.id.toString() === id.toString(),
 			); // Find the index of the product in the fallback data with the matching ID.
@@ -75,12 +87,10 @@ function ProductDetails() {
 				sessionStorage.setItem(
 					"flashSuccessMessage",
 					"Product from fallback data was successfully deleted!",
-				);
+				); // Set a success message indicating that the product from the fallback data was deleted.
+
 				navigate("/product-listing"); // Redirect to the product listing page after deletion.
 			} else {
-				console.error(
-					`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
-				);
 				setDeleteError(
 					`${deleteErrorResponse.message}: Failed to delete product. Please try again.`,
 				);
@@ -120,11 +130,26 @@ function ProductDetails() {
 	// Return JSX for product details:
 	return (
 		<Container className="my-5">
+			{/* Add to cart functionality */}
+			<ToastContainer position="top-end" className="p-3">
+				<Toast
+					onClose={() => setShowAddToCartToast(false)}
+					show={showAddToCartToast}
+					delay={2500}
+					autohide
+					bg="success"
+				>
+					<Toast.Body className="text-white fw-semibold fs-5">
+						Product added to cart!
+					</Toast.Body>
+				</Toast>
+			</ToastContainer>
+
 			{deleteError && (
 				<Alert
 					variant="danger"
 					dismissible
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{deleteError}
 				</Alert>
@@ -134,7 +159,7 @@ function ProductDetails() {
 				<Alert
 					variant="warning"
 					dismissible
-					className="mb-5 mt-0 py-2 alert-align-close text-center"
+					className="mb-5 mt-0 py-2 alert-align-close text-center fs-5 fw-semibold"
 				>
 					{error}
 				</Alert>
@@ -146,11 +171,11 @@ function ProductDetails() {
 					src={product.image}
 					alt={product.title}
 					style={{
-						width: "400px",
-						height: "300px",
+						minWidth: "400px",
+						height: "350px",
 						objectFit: "contain",
 					}}
-					className="img-fluid border rounded bg-white shadow-sm"
+					className="img-fluid border rounded bg-white shadow-md py-3 px-5"
 				/>
 
 				{/* Wrapper: product details + buttons */}
@@ -184,6 +209,7 @@ function ProductDetails() {
 							variant="outline-success"
 							className="rounded-pill px-4 fw-semibold"
 							disabled={deleting}
+							onClick={() => setShowAddToCartToast(true)}
 						>
 							Add to Cart
 						</Button>
