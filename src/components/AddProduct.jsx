@@ -264,8 +264,8 @@ const AddProduct = () => {
 				onConfirm={handleConfirmAdd}
 				onCancel={handleClose}
 				isSubmitting={isSubmitting}
-				heading="Confirm Add"
-				confirmLabel="Confirm Changes"
+				heading="Add Product"
+				confirmLabel="Confirm Add"
 				savingLabel="Saving..."
 			/>
 		</Container>

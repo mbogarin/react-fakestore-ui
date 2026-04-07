@@ -18,42 +18,45 @@ const ConfirmDeleteModal = ({
 			centered
 			backdrop={loading ? "static" : true}
 			keyboard={!loading}
-			contentClassName="rounded-4 shadow-lg border border-2 border-danger-subtle"
+			contentClassName="rounded-4 shadow-lg border border-2 "
+			// size="lg"
 		>
-			<Modal.Header closeButton>
-				<Modal.Title className="fw-bold text-danger text-center w-100 mt-0">
+			<Modal.Header
+				closeButton
+				closeVariant="white"
+				className="bg-danger text-white rounded-top-4 border-bottom-0"
+			>
+				<Modal.Title className="fw-bold text-center w-100 fs-5 ms-4">
 					Confirm Deletion
 				</Modal.Title>
 			</Modal.Header>
 
-			<Modal.Body className="text-center fs-5">
-				<p>
-					Are you sure you want to delete
-					<br />
-					<strong className="fw-bold">{productName}</strong>?
+			<Modal.Body className="text-center d-flex flex-column align-items-center justify-content-center">
+				<p className="fs-5 mt-1">
+					Are you sure you want to delete this product?
 				</p>
-				<p className="mt-4 fw-light fst-italic mb-0 py-0">
-					This action cannot be undone.
+				<p className="fw-bold px-5 mt-2">{productName}</p>
+				<p className=" text-danger mt-2 fs-6">
+					(<strong>Note:</strong> this action cannot be undone).
 				</p>
 			</Modal.Body>
 
-			<Modal.Footer className="d-flex justify-content-center gap-3">
-				{/* Cancel button */}
+			<Modal.Footer className="d-flex justify-content-center gap-2">
 				<Button
-					variant="secondary"
+					variant="outline-secondary"
 					onClick={handleClose}
 					disabled={loading}
-					className="fw-semibold"
+					className="fw-semibold px-4 alert-align-close"
 				>
 					Cancel
 				</Button>
 
 				{/* Confirm Delete button */}
 				<Button
-					variant="danger"
+					variant="outline-danger"
 					onClick={onConfirm}
 					disabled={loading}
-					className="fw-semibold"
+					className="fw-semibold px-4"
 				>
 					{loading ? "Deleting..." : "Delete"}
 				</Button>

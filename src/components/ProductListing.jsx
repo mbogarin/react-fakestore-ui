@@ -20,13 +20,14 @@ function ProductListing() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [successMessage, setSuccessMessage] = useState(() => {
-		const flashMessage = sessionStorage.getItem("flashSuccessMessage");
+		const flashMessage = sessionStorage.getItem("flashSuccessMessage"); // Check for a flash success message in sessionStorage (set by ProductDetails after deletion).
 		if (flashMessage) {
 			sessionStorage.removeItem("flashSuccessMessage");
 		}
 		return flashMessage;
 	});
 
+	// =!
 	useEffect(() => {
 		const fetchProducts = async () => {
 			try {
@@ -54,6 +55,7 @@ function ProductListing() {
 		fetchProducts();
 	}, []);
 
+	// Loading and error messages:
 	if (loading) {
 		return (
 			<Container className="d-flex justify-content-center align-items-center text-center my-5 vh-100">
@@ -76,7 +78,6 @@ function ProductListing() {
 					{error}
 				</Alert>
 			)}
-
 			{successMessage && (
 				<Alert
 					variant="success"
@@ -90,9 +91,9 @@ function ProductListing() {
 					{successMessage}
 				</Alert>
 			)}
-
 			<h1 className="mb-5 text-center text-primary fw-bold">Products</h1>
 
+			{/* // <! */}
 			<Row className="g-4 justify-content-center">
 				{products.map((product) => (
 					<Col
@@ -107,7 +108,7 @@ function ProductListing() {
 							<Card.Body className="d-flex flex-column flex-grow-1">
 								{/* Title */}
 								<Card.Title
-									className="mb-4 text-center fs-5 fw-bold align-items-center d-flex justify-content-center"
+									className="mb-4 text-center fw-bold align-items-center d-flex justify-content-center"
 									style={{
 										minHeight: "5em",
 									}}
@@ -115,7 +116,7 @@ function ProductListing() {
 									{product.title}
 								</Card.Title>
 
-								{/* Product Image */}
+								{/* Image */}
 								<Card.Img
 									className="mb-4 img-fluid mt-auto align-self-center d-flex align-items-center justify-content-center"
 									variant="top"

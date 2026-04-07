@@ -11,8 +11,9 @@ import axios from "axios";
 
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
+// =!
 function ProductDetails() {
-	const { id } = useParams();
+	const { id } = useParams(); // =!
 	const navigate = useNavigate();
 
 	const [product, setProduct] = useState(null);
@@ -24,6 +25,7 @@ function ProductDetails() {
 
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+	// =!
 	useEffect(() => {
 		const fetchProductDetails = async () => {
 			try {
@@ -116,12 +118,12 @@ function ProductDetails() {
 				<Toast
 					onClose={() => setShowAddToCartToast(false)}
 					show={showAddToCartToast}
-					delay={2500}
+					delay={3000}
 					autohide
 					bg="success"
 				>
 					<Toast.Header closeButton={false} className="py-2">
-						<strong className="me-auto text-success">
+						<strong className="me-auto text-success fs-6">
 							Added to Cart!
 						</strong>
 						<small className="text-success">just now</small>
@@ -152,6 +154,7 @@ function ProductDetails() {
 				</Alert>
 			)}
 
+			{/* // < */}
 			<div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 mb-5 mx-5 py-4 px-5">
 				{/* image */}
 				<img
@@ -165,29 +168,30 @@ function ProductDetails() {
 					className="img-fluid border rounded bg-white shadow-md py-3 px-5"
 				/>
 
-				{/* Wrapper: product details + buttons */}
+				{/* Product details */}
 				<div className="flex-grow-1">
-					{/* Product details */}
+					{/* Title */}
 					<h2 className="fw-bold mb-3 text-center text-md-start ms-3">
 						{product.title}
 					</h2>
 
 					<ListGroup variant="flush" className="mb-4">
-						{/* price */}
+						{/* Price */}
 						<ListGroup.Item className="fs-4 text-primary fw-bold">
 							${Number(product.price).toFixed(2)}
 						</ListGroup.Item>
 
-						{/* description */}
+						{/* Description */}
 						<ListGroup.Item>
 							<strong>Description:</strong> {product.description}
 						</ListGroup.Item>
-						{/* category */}
+						{/* Category */}
 						<ListGroup.Item>
 							<strong>Category:</strong> {product.category}
 						</ListGroup.Item>
 					</ListGroup>
 
+					{/* // <! */}
 					{/* Buttons */}
 					<div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-3 mt-4 ms-3 justify-md-content-center justify-content-center flex-wrap">
 						{/* 1. Add to cart */}

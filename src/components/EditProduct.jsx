@@ -13,6 +13,11 @@ import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import ConfirmChangesModal from "./ConfirmChangesModal";
 
+const priceFormatter = new Intl.NumberFormat("en-US", {
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
+});
+
 function EditProduct() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -292,9 +297,7 @@ function EditProduct() {
 												type="number"
 												name="price"
 												placeholder="Enter product price"
-												value={Number(
-													formData.price,
-												).toFixed(2)}
+												value={formData.price}
 												onChange={handleChange}
 												className="shadow-sm"
 												min="0"
@@ -426,7 +429,7 @@ function EditProduct() {
 						<ListGroup variant="flush" className="mb-4">
 							{/* price */}
 							<ListGroup.Item className="fs-4 text-primary fw-bold">
-								${Number(updatedProduct.price).toFixed(2)}
+								${priceFormatter.format(updatedProduct.price)}
 							</ListGroup.Item>
 
 							{/* description */}
@@ -463,7 +466,7 @@ function EditProduct() {
 				onConfirm={handleConfirmChanges}
 				onCancel={handleCloseModal}
 				isSubmitting={isSubmitting}
-				heading="Confirm Update"
+				heading="Edit Product"
 				confirmLabel="Confirm Changes"
 				savingLabel="Saving..."
 			/>
