@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
 const getRandomPlaceholderImage = () =>
-	`https://picsum.photos/600/400?random=${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+	`https://picsum.photos/400/300?random=${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
 const formatPrice = (value) => {
 	const parsed = Number(value);
@@ -47,24 +47,24 @@ const ConfirmChangesModal = ({
 
 			<Modal.Body className="text-center bg-light-subtle">
 				<div>
-					<div className=" text-center img-fluid">
+					<Modal.Title className="w-100 text-center">
+						<h3 className="fw-semibold fs-3 mt-4 mb-4">
+							{formData?.title || "Untitled Product"}
+						</h3>
+					</Modal.Title>
+
+					<div className=" text-center img-fluid mb-3 mt-1">
 						<img
 							src={imageSource}
 							alt={formData?.title || "Product Image Preview"}
 							style={{
 								maxWidth: "600px",
-								height: "400px",
+								maxHeight: "300px",
 								objectFit: "contain",
 							}}
 							className="shadow-md px-5"
 						/>
 					</div>
-
-					<Modal.Title className="w-100 text-center">
-						<h3 className="fw-semibold fs-4">
-							{formData?.title || "Untitled Product"}
-						</h3>
-					</Modal.Title>
 
 					<p className="m-4">
 						<span className="badge bg-success fs-5 px-4 py-2 mb-2 fw-semibold">
@@ -72,7 +72,7 @@ const ConfirmChangesModal = ({
 						</span>
 					</p>
 
-					<p className="mt-4 fs-5 text-start mx-5 text-justify">
+					<p className="mt-5 fs-5 text-start mx-5 text-justify">
 						<strong>Description:</strong> {formData?.description}
 					</p>
 

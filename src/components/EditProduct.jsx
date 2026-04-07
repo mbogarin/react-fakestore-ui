@@ -9,11 +9,9 @@ import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
-import Badge from "react-bootstrap/Badge";
-import Card from "react-bootstrap/Card";
 
 import axios from "axios";
-import ConfirmChangesModal from "./ConfirmChangeModal";
+import ConfirmChangesModal from "./ConfirmChangesModal";
 
 function EditProduct() {
 	const { id } = useParams();

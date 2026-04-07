@@ -9,7 +9,7 @@ import Alert from "react-bootstrap/Alert";
 import InputGroup from "react-bootstrap/InputGroup";
 import axios from "axios";
 
-import ConfirmChangesModal from "./ConfirmChangeModal";
+import ConfirmChangesModal from "./ConfirmChangesModal";
 
 const initialFormData = {
 	title: "",
@@ -51,12 +51,6 @@ const AddProduct = () => {
 		setFormData((prevData) => ({ ...prevData, [name]: value })); //
 	}; //
 
-	const resetForm = () => {
-		setFormData(initialFormData);
-		setValidated(false);
-		setError(null);
-	};
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const addForm = e.currentTarget;
@@ -75,11 +69,16 @@ const AddProduct = () => {
 		if (isSubmitting) return; // Prevent multiple submissions
 		setIsSubmitting(true);
 
+		const newProductData = {
+			...formData,
+			price: Number(formData.price), // Ensure price is a number
+		};
+
 		// API call:
 		try {
 			const response = await axios.post(
 				"https://fakestoreapi.com/products",
-				formData,
+				newProductData,
 			);
 			console.log(
 				"successful API POST request for added product in AddProduct component:",
@@ -103,7 +102,6 @@ const AddProduct = () => {
 	};
 
 	const handleClose = () => {
-		resetForm();
 		setShowConfirmModal(false);
 	};
 

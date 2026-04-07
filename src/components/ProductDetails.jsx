@@ -199,7 +199,6 @@ function ProductDetails() {
 						>
 							Add to Cart
 						</Button>
-						{/* Wrapper: Edit/Delete buttons */}
 
 						<div className="d-flex gap-3 ms-md-auto me-3">
 							{/* 2. Edit product */}
