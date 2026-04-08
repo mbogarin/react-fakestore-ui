@@ -384,7 +384,7 @@ function EditProduct() {
 								>
 									{savingChanges
 										? "Saving..."
-										: "Save Changes"}
+										: "Submit Changes"}
 								</Button>
 
 								{/* Back to Product Details button */}

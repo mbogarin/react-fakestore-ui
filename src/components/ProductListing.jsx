@@ -27,7 +27,7 @@ function ProductListing() {
 		return flashMessage;
 	});
 
-	// =!
+	// (API Call to Fetch Products)
 	useEffect(() => {
 		const fetchProducts = async () => {
 			try {
@@ -55,7 +55,7 @@ function ProductListing() {
 		fetchProducts();
 	}, []);
 
-	// Loading and error messages:
+	// (Loading State UI)
 	if (loading) {
 		return (
 			<Container className="d-flex justify-content-center align-items-center text-center my-5 vh-100">
@@ -68,6 +68,7 @@ function ProductListing() {
 
 	return (
 		<Container className="py-4">
+			{/* // (Error & Success Alerts) */}
 			{error && (
 				<Alert
 					variant="danger"
@@ -93,7 +94,7 @@ function ProductListing() {
 			)}
 			<h1 className="mb-5 text-center text-primary fw-bold">Products</h1>
 
-			{/* // <! */}
+			{/* // (Product Cards Grid) */}
 			<Row className="g-4 justify-content-center">
 				{products.map((product) => (
 					<Col
@@ -106,7 +107,7 @@ function ProductListing() {
 					>
 						<Card className="w-100 shadow-lg h-100 d-flex flex-column border rounded-2 dark-border">
 							<Card.Body className="d-flex flex-column flex-grow-1">
-								{/* Title */}
+								{/* //~ Title */}
 								<Card.Title
 									className="mb-4 text-center fw-bold align-items-center d-flex justify-content-center"
 									style={{
@@ -116,7 +117,7 @@ function ProductListing() {
 									{product.title}
 								</Card.Title>
 
-								{/* Image */}
+								{/* //~ Image */}
 								<Card.Img
 									className="mb-4 img-fluid mt-auto align-self-center d-flex align-items-center justify-content-center"
 									variant="top"
@@ -129,12 +130,12 @@ function ProductListing() {
 									}}
 								/>
 
-								{/* Price */}
+								{/* //~ Price */}
 								<Card.Text className="text-center fs-5 text-primary fw-bold mb-1 mt-4">
 									${priceFormatter.format(product.price)}
 								</Card.Text>
 
-								{/* View Details Button */}
+								{/* // (View Details Button) */}
 								<div className="d-grid mt-2 mb-0">
 									<Button
 										as={Link}

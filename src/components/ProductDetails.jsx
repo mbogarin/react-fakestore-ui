@@ -11,9 +11,8 @@ import axios from "axios";
 
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-// =!
 function ProductDetails() {
-	const { id } = useParams(); // =!
+	const { id } = useParams(); // (extract product ID from URL)
 	const navigate = useNavigate();
 
 	const [product, setProduct] = useState(null);
@@ -25,7 +24,7 @@ function ProductDetails() {
 
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-	// =!
+	// (API call to fetch product details)
 	useEffect(() => {
 		const fetchProductDetails = async () => {
 			try {
@@ -154,9 +153,9 @@ function ProductDetails() {
 				</Alert>
 			)}
 
-			{/* // < */}
+			{/* // [Product Details Section] */}
 			<div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 mb-5 mx-5 py-4 px-5">
-				{/* image */}
+				{/* //~ Image */}
 				<img
 					src={product.image}
 					alt={product.title}
@@ -168,33 +167,32 @@ function ProductDetails() {
 					className="img-fluid border rounded bg-white shadow-md py-3 px-5"
 				/>
 
-				{/* Product details */}
 				<div className="flex-grow-1">
-					{/* Title */}
+					{/* //~ Title */}
 					<h2 className="fw-bold mb-3 text-center text-md-start ms-3">
 						{product.title}
 					</h2>
 
 					<ListGroup variant="flush" className="mb-4">
-						{/* Price */}
+						{/* //~ Price */}
 						<ListGroup.Item className="fs-4 text-primary fw-bold">
 							${Number(product.price).toFixed(2)}
 						</ListGroup.Item>
 
-						{/* Description */}
+						{/* // (Description) */}
 						<ListGroup.Item>
 							<strong>Description:</strong> {product.description}
 						</ListGroup.Item>
-						{/* Category */}
+
+						{/* // (Category) */}
 						<ListGroup.Item>
 							<strong>Category:</strong> {product.category}
 						</ListGroup.Item>
 					</ListGroup>
 
-					{/* // <! */}
-					{/* Buttons */}
+					{/* //~ Buttons Section */}
 					<div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-3 mt-4 ms-3 justify-md-content-center justify-content-center flex-wrap">
-						{/* 1. Add to cart */}
+						{/* // (1. Add to cart) */}
 						<Button
 							variant="outline-success"
 							className="rounded-pill px-4 fw-semibold"
@@ -205,7 +203,7 @@ function ProductDetails() {
 						</Button>
 
 						<div className="d-flex gap-3 ms-md-auto me-3">
-							{/* 2. Edit product */}
+							{/* // (2. Edit product) */}
 							<Button
 								variant="outline-primary"
 								className="px-4 fw-semibold rounded-pill"
@@ -215,7 +213,7 @@ function ProductDetails() {
 								Edit Details
 							</Button>
 
-							{/* 3. Delete product */}
+							{/* // (3. Delete product) */}
 							<Button
 								variant="outline-danger"
 								className=" rounded-pill px-4 fw-semibold"
@@ -229,7 +227,7 @@ function ProductDetails() {
 				</div>
 			</div>
 
-			{/* Confirm Delete Modal */}
+			{/* // (Confirm Delete Modal) */}
 			<ConfirmDeleteModal
 				show={showDeleteModal}
 				productName={product.title}
